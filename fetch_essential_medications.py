@@ -52,19 +52,53 @@ def fetch_essential_medications():
                 records = data.get('results', [])
                 if records:
                     item = records[0]
-                    # Nettoyer un peu le nom (METFORMIN -> Metformin)
-                    clean_name = med_name.lower().title()
+                    # Convertir en liste si ce n'est pas déjà le cas pour iterer facilement
+                    brand_names = item.get('brand_name', 'N/A')
+                    if isinstance(brand_names, str):
+                        brand_names = [brand_names.strip()]
                     
+                    # On stocke toutes les marques trouvées (ex: Doliprane, Tylenol...)
+                    clean_brand_names = []
+                    for brand in brand_names:
+                        b = brand.strip().capitalize()
+                        if b and b not in clean_brand_names:
+                            clean_brand_names.append(b)
+                            
+                    # Pour assurer une bonne détection NLP (Machine Learning/OCR en Tunisie par ex),
+                    # on ajoute de force quelques noms de marques extrêmement fréquents 
+                    # en Tunisie et en France liés à certaines molécules.
+                    molecule = clean_name.lower()
+                    tunisian_french_equivalents = []
+                    
+                    if "acetaminophen" in molecule or "paracetamol" in molecule:
+                        tunisian_french_equivalents = ["Doliprane", "Efferalgan", "Dafalgan", "Panadol", "Novacetol", "Analgan"]
+                    elif "ibuprofen" in molecule:
+                        tunisian_french_equivalents = ["Advil", "Nurofen", "Spedifen", "Brufen", "Upfen"]
+                    elif "amoxicillin" in molecule:
+                        tunisian_french_equivalents = ["Clamoxyl", "Augmentin", "Amodex"]
+                    elif "metformin" in molecule:
+                        tunisian_french_equivalents = ["Glucophage", "Stagid", "Metformine"]
+                    elif "omeprazole" in molecule:
+                        tunisian_french_equivalents = ["Mopral", "Zoltum"]
+                    elif "azithromycin" in molecule:
+                        tunisian_french_equivalents = ["Zithromax", "Azithromycine"]
+                        
+                    # On fusionne avec la liste globale
+                    # Cela aidera votre programme OCR/Reconnaissance à identifier les noms locaux
+                    for local_brand in tunisian_french_equivalents:
+                        if local_brand not in clean_brand_names:
+                            clean_brand_names.append(local_brand)
+
                     results_data.append({
                         "id": i + 1,
                         "name": clean_name,
-                        "brand_name": item.get('brand_name', 'N/A').strip(),
+                        "international_brands": clean_brand_names,
                         "type": item.get('product_type', 'N/A'),
                         "dosage_form": item.get('dosage_form', 'N/A'),
                         "routes": item.get('route', []),
                         "pharm_class": item.get('pharm_class', [])
                     })
-                    print(f"[{i+1}/{len(top_medications)}] {clean_name} détaillé et classé.")
+                    print(f"[{i+1}/{len(top_medications)}] {clean_name} classé avec {len(clean_brand_names)} marques associées.")
                 else:
                     print(f"[{i+1}/{len(top_medications)}] Impossible de détailler {med_name}.")
                     
