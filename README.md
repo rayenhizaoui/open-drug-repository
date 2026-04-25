@@ -5,20 +5,27 @@ Un projet simple et efficace permettant de générer et maintenir une base de do
 ## 🚀 Fonctionnalités
 
 - **Performant & Optimisé** : Conçu pour traiter des milliers, voire des millions de données instantanément grâce à l'utilisation de `set()` en Python pour éviter les doublons en temps réel O(1).
-- **Médicaments Essentiels** : Un **nouveau script** (`fetch_essential_medications.py`) a été ajouté pour ne ramener que la "crème de la crème" (top des médicaments les plus prescrits), avec un haut niveau de détail (catégories, formes galéniques, routes).
+- **Médicaments Essentiels EN FRANÇAIS** : Un script intelligent (`fetch_essential_medications.py`) a été ajouté pour ne ramener que la "crème de la crème" (top 1000 des médicaments mondiaux). Il traduit *tout* en français automatiquement via Google Translate (formes galéniques, routes) !
 - **Reprise Automatique (Resumable)** : Le script de base (`fetch_medications.py`) sauvegarde sa progression dans `fetch_state.txt`. En cas de coupure (ou de limite API), il reprendra exactement là où il s'est arrêté à la prochaine exécution.
 - **Respect des Limites API (Anti-Ban)** : Délais intégrés (`time.sleep`) et gestion des erreurs HTTP 429 pour ne pas se faire bloquer par les serveurs gouvernementaux.
 - **Export JSON Propre** : Génère le fichier `medications_full.json` (ou `medications_essential.json`) prêt à être utilisé dans n'importe quelle application (Web, Mobile, etc.).
 
-## 📦 Utilisation
+## 📦 Installation et Lancement
 
-1. Assurez-vous d'avoir Python installé sur votre machine.
-2. Clonez le dépôt et naviguez dans le dossier.
-3. Lancez le script de récupération :
+1. Clonez ce dépôt.
+2. Installez les dépendances nécessaires à la traduction :
    ```bash
-   python fetch_medications.py
+   pip install -r requirements.txt
    ```
-4. Le script commencera à télécharger les données et créera/mettra à jour le fichier `medications_full.json`. Vous pouvez l'arrêter à tout moment (Ctrl+C) et le relancer plus tard.
+3. Lancer un script de données :
+   - Pour les **1000 médicaments et traduits en FR** (essentiels, routes, familles) : 
+     ```bash
+     python fetch_essential_medications.py
+     ```
+   - Pour la **base brute massive (+150 000 entrées)** brute en anglais via requêtes paginées :
+     ```bash
+     python fetch_medications.py
+     ```
 
 ## 📄 Structure des données générées
 
