@@ -1,0 +1,62 @@
+[
+  {
+    "name": "Paracetamol",
+    "type": "Generic",
+    "category": "Analgesic, Antipyretic",
+    "description": "Used to treat pain and fever."
+  },
+  {
+    "name": "Ibuprofen",
+    "type": "Generic",
+    "category": "Non-steroidal anti-inflammatory drug (NSAID)",
+    "description": "Used for treating pain, fever, and inflammation."
+  },
+  {
+    "name": "Amoxicillin",
+    "type": "Generic",
+    "category": "Antibiotic (Penicillin)",
+    "description": "Used to treat a wide variety of bacterial infections."
+  },
+  {
+    "name": "Aspirin",
+    "type": "Generic",
+    "category": "Analgesic, Anti-inflammatory, Antiplatelet",
+    "description": "Used to reduce pain, fever, or inflammation."
+  },
+  {
+    "name": "Omeprazole",
+    "type": "Generic",
+    "category": "Proton-pump inhibitor (PPI)",
+    "description": "Used to treat gastroesophageal reflux disease (GERD) and other conditions caused by excess stomach acid."
+  },
+  {
+    "name": "Metformin",
+    "type": "Generic",
+    "category": "Antidiabetic (Biguanide)",
+    "description": "First-line medication for the treatment of type 2 diabetes."
+  },
+  {
+    "name": "Atorvastatin",
+    "type": "Generic",
+    "category": "Statin (Cholesterol-lowering)",
+    "description": "Used to prevent cardiovascular disease in those at high risk and treat abnormal lipid levels."
+  },
+  {
+    "name": "Amlodipine",
+    "type": "Generic",
+    "category": "Calcium channel blocker",
+    "description": "Used to treat high blood pressure and coronary artery disease."
+  },
+  {
+    "name": "Salbutamol",
+    "type": "Generic",
+    "category": "Bronchodilator (Beta-2 agonist)",
+    "description": "Used for the relief of bronchospasm in conditions such as asthma and chronic obstructive pulmonary disease."
+  },
+  {
+    "name": "Diazepam",
+    "type": "Generic",
+    "category": "Benzodiazepine",
+    "description": "Used to treat a range of conditions, including anxiety, seizures, alcohol withdrawal syndrome, and muscle spasms."
+  }
+]

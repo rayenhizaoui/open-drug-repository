@@ -1,0 +1,6 @@
+# Fichiers générés automatiquement par l'exécution du script, ils peuvent devenir très lourd.
+# Décommentez (supprimez le #) la ligne suivante si vous ne voulez PAS héberger une base de millions de médicaments sur GitHub
+# medications_full.json
+
+# Le tracker d'état (ne le mettez pas sur git si d'autres personnes doivent recharger la base sur leur pc avec le script)
+fetch_state.txt
