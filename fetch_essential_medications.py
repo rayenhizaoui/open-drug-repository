@@ -3,6 +3,7 @@ import urllib.request
 import urllib.parse
 import urllib.error
 import time
+import os
 
 def fetch_essential_medications():
     """
@@ -13,8 +14,15 @@ def fetch_essential_medications():
     mais aussi toutes les marques déposées par divers laboratoires globaux.
     """
     output_file = 'medications_essential.json'
+    mapping_file = 'tunisian_mapping.json'
     max_items = 1000 # La limite max de la fonction count d'OpenFDA est 1000
     
+    # 0. Charger le dictionnaire local Tunisien/Français s'il existe
+    local_tunisian_mapping = {}
+    if os.path.exists(mapping_file):
+        with open(mapping_file, 'r', encoding='utf-8') as f:
+            local_tunisian_mapping = json.load(f)
+            
     print(f"Étape 1 : Demande du Top {max_items} des médicaments les plus fréquents (Noms de molécules internationales)...\n")
     
     # 1. On demande dynamiquement à l'API de classer les 1000 noms génériques les plus répertoriés
@@ -65,26 +73,16 @@ def fetch_essential_medications():
                             clean_brand_names.append(b)
                             
                     # Pour assurer une bonne détection NLP (Machine Learning/OCR en Tunisie par ex),
-                    # on ajoute de force quelques noms de marques extrêmement fréquents 
-                    # en Tunisie et en France liés à certaines molécules.
+                    # on fusionne l'API mondiale avec notre dictionnaire "tunisian_mapping.json".
                     molecule = clean_name.lower()
                     tunisian_french_equivalents = []
                     
-                    if "acetaminophen" in molecule or "paracetamol" in molecule:
-                        tunisian_french_equivalents = ["Doliprane", "Efferalgan", "Dafalgan", "Panadol", "Novacetol", "Analgan"]
-                    elif "ibuprofen" in molecule:
-                        tunisian_french_equivalents = ["Advil", "Nurofen", "Spedifen", "Brufen", "Upfen"]
-                    elif "amoxicillin" in molecule:
-                        tunisian_french_equivalents = ["Clamoxyl", "Augmentin", "Amodex"]
-                    elif "metformin" in molecule:
-                        tunisian_french_equivalents = ["Glucophage", "Stagid", "Metformine"]
-                    elif "omeprazole" in molecule:
-                        tunisian_french_equivalents = ["Mopral", "Zoltum"]
-                    elif "azithromycin" in molecule:
-                        tunisian_french_equivalents = ["Zithromax", "Azithromycine"]
+                    # On parcourt notre dictionnaire local
+                    for key_molecule, local_brands in local_tunisian_mapping.items():
+                        if key_molecule in molecule:
+                            tunisian_french_equivalents.extend(local_brands)
                         
-                    # On fusionne avec la liste globale
-                    # Cela aidera votre programme OCR/Reconnaissance à identifier les noms locaux
+                    # On fusionne avec la liste globale (OpenFDA + Marché Tunisien)
                     for local_brand in tunisian_french_equivalents:
                         if local_brand not in clean_brand_names:
                             clean_brand_names.append(local_brand)
