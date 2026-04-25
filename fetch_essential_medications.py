@@ -3,46 +3,19 @@ import urllib.request
 import urllib.parse
 import urllib.error
 import time
-from deep_translator import GoogleTranslator
-
-# Cache de traduction pour éviter de surcharger Google avec les mêmes termes (Poudre, Comprimé, etc)
-FR_CACHE = {}
-
-def translate_to_fr(text):
-    if not text or text == 'N/A' or text == 'Human Prescription Drug':
-        return text
-        
-    # Gérer les listes (ex: routes d'administration)
-    if isinstance(text, list):
-        translated_list = []
-        for item in text:
-            translated_list.append(translate_to_fr(item))
-        return translated_list
-        
-    if text in FR_CACHE:
-        return FR_CACHE[text]
-        
-    try:
-        # Traduire de l'anglais vers le français avec Google Translate
-        res = GoogleTranslator(source='en', target='fr').translate(str(text))
-        if res:
-            res = res.capitalize()
-            FR_CACHE[text] = res
-            return res
-        return text
-    except Exception:
-        # En cas d'erreur de traduction, on renvoie le texte original (Anglais)
-        return text
 
 def fetch_essential_medications():
     """
     Script pour récupérer automatiquement les 1000 médicaments les plus fréquents 
-    de la base de données américaines, et les traduire en français.
+    de la base de données de la FDA. Il fait appel à la fonction 'count' d'OpenFDA
+    qui contient des médicaments internationaux vendus partout (France, US...), 
+    car OpenFDA recense non seulement les composés (Paracetamol/Acetaminophen),
+    mais aussi toutes les marques déposées par divers laboratoires globaux.
     """
     output_file = 'medications_essential.json'
     max_items = 1000 # La limite max de la fonction count d'OpenFDA est 1000
     
-    print(f"Étape 1 : Demande du Top {max_items} des médicaments les plus fréquents au niveau mondial...\n")
+    print(f"Étape 1 : Demande du Top {max_items} des médicaments les plus fréquents (Noms de molécules internationales)...\n")
     
     # 1. On demande dynamiquement à l'API de classer les 1000 noms génériques les plus répertoriés
     count_url = f"https://api.fda.gov/drug/ndc.json?count=generic_name.exact&limit={max_items}"
@@ -80,26 +53,18 @@ def fetch_essential_medications():
                 if records:
                     item = records[0]
                     # Nettoyer un peu le nom (METFORMIN -> Metformin)
-                    clean_name_en = med_name.lower().title()
-                    
-                    # Traduire vers le français !
-                    name_fr = translate_to_fr(clean_name_en)
-                    type_fr = translate_to_fr(item.get('product_type', 'N/A').title())
-                    form_fr = translate_to_fr(item.get('dosage_form', 'N/A').title())
-                    routes_fr = [translate_to_fr(r.title()) for r in item.get('route', ["N/A"])]
-                    class_fr = [translate_to_fr(c.title()) for c in item.get('pharm_class', ["N/A"])]
+                    clean_name = med_name.lower().title()
                     
                     results_data.append({
                         "id": i + 1,
-                        "name_fr": name_fr,
-                        "name_en": clean_name_en,
+                        "name": clean_name,
                         "brand_name": item.get('brand_name', 'N/A').strip(),
-                        "type": type_fr,
-                        "dosage_form": form_fr,
-                        "routes": routes_fr,
-                        "pharm_class": class_fr
+                        "type": item.get('product_type', 'N/A'),
+                        "dosage_form": item.get('dosage_form', 'N/A'),
+                        "routes": item.get('route', []),
+                        "pharm_class": item.get('pharm_class', [])
                     })
-                    print(f"[{i+1}/{len(top_medications)}] {clean_name_en} -> {name_fr} (Traduit)")
+                    print(f"[{i+1}/{len(top_medications)}] {clean_name} détaillé et classé.")
                 else:
                     print(f"[{i+1}/{len(top_medications)}] Impossible de détailler {med_name}.")
                     
